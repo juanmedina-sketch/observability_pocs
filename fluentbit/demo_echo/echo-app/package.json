@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "express": "^5.1.0",
+    "express-ruid": "^1.1.5",
+    "winston": "^3.17.0"
+  },
+  "scripts": {
+    "start": "node server.js"
+  }
+}

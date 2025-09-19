@@ -1,0 +1,32 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  # Monitorización del propio Prometheus
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 15s
+    metrics_path: /metrics
+
+  # Monitorización de la aplicación de ejemplo demo-echo
+  - job_name: 'demo-echo'
+    static_configs:
+      - targets: ['demo-echo:3000']
+    scrape_interval: 10s
+    metrics_path: /metrics
+    scrape_timeout: 5s
+
+  # Monitorización del sistema con Node Exporter
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 15s
+    metrics_path: /metrics
+
+  # Monitorización de Grafana pero creo que aca hay que habilitarlos con un grefana.ini
+  # - job_name: 'grafana'
+  #   static_configs:
+  #     - targets: ['grafana:3000']
+  #   scrape_interval: 30s
+  #   metrics_path: /metrics 

@@ -1,0 +1,31 @@
+server {
+  log_level = "info"
+}
+
+loki.write "default" {
+  endpoint { url = "http://grafana-loki:3100/loki/api/v1/push" }
+}
+
+loki.positions "default" {
+  filename = "/tmp/positions.yaml"
+}
+
+loki.process "docker" {
+  stage.json { expressions = { stream = "stream", time = "time", message = "log" } }
+  stage.timestamp { source = "time"; format = "RFC3339Nano" }
+  stage.labels { values = { stream = "" } }
+  stage.output { source = "message" }
+
+  # (opcional) si tus logs tienen JSON interno (Winston)
+  stage.json { expressions = { level = "level", requestId = "requestId", msg = "message" } }
+  stage.labels { values = { level = "", requestId = "" } }
+
+  forward_to = [loki.write.default.receiver]
+}
+
+loki.source.file "docker" {
+  targets = [{ __path__ = "/var/lib/docker/containers/*/*.log" }]
+  labels  = { job = "echo-app-logs", service = "web-app" }
+  positions  = loki.positions.default
+  forward_to = [loki.process.docker.receiver]
+}
